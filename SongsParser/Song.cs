@@ -14,6 +14,7 @@ namespace SongsParser
         [Key]
         [Column("id")]
         [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
         [Column("name")]

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Office.Interop.Word;
 
 namespace SongsParser
@@ -20,15 +19,22 @@ namespace SongsParser
             }).ToList();
 
             RemoveUnnecessarySymbolsAndSetName(songs);
+            var db=new SongsContext();
+            SaveToDatabase(db, songs);
+        }
 
-
-
+        private static void SaveToDatabase(SongsContext db, List<Song> songs)
+        {
+            db.Songs.RemoveRange(db.Songs);
+            db.Songs.AddRange(songs);
+            db.SaveChanges();
         }
 
         private static IEnumerable<string> PreprocessingToParsing(string text)
         {
-            var songTexts = text.Split('№').Select(s => s.Remove(0, 2)).Skip(1);
-            return songTexts;
+            var songTexts = text.Split('№');
+                
+            return songTexts.Skip(1);
         }
 
         private static void RemoveUnnecessarySymbolsAndSetName(IEnumerable<Song> songs)
