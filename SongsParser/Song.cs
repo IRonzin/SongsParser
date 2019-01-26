@@ -13,16 +13,12 @@ namespace SongsParser
     {
         [Key]
         [Column("id")]
-        [Required]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
         [Column("name")]
-        [Required]
         public string Name { get; set; }
 
         [Column("text")]
-        [Required]
         public string Text { get; set; }
     }
 }

@@ -65,7 +65,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Resource Include="Program.cs" />
+    <Compile Include="ProgramForOtherSongsBooks.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Song.cs" />
     <Compile Include="SongsContext.cs" />

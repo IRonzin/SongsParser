@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.Office.Interop.Word;
 
 namespace SongsParser
@@ -11,19 +12,19 @@ namespace SongsParser
     {
         static void Main(string[] args)
         {
-            //var text = GetTextFromWord(@"D:\Repositories\BlessSongs.doc");
-            var text=File.ReadAllText(@"D:\Repositories\songsTx.txt");
-            //File.WriteAllText(@"D:\Repositories\songsTx.txt", text);
+            var text = GetTextFromWord(@"D:\Repositories\BlessSongs.doc");
+            //var text = File.ReadAllText(@"D:\Repositories\songsTx.txt");
+            File.WriteAllText(@"D:\Repositories\songsTx.txt", text);
             var songTexts = PreprocessingToParsing(text);
             var songs = songTexts.Select(s => new Song()
             {
-                Id = int.Parse(string.Concat(s.TakeWhile(p => p != '\r'))),
                 Text = string.Concat(s.SkipWhile(p => p != '\n'))
             }).ToList();
 
-            RemoveUnnecessarySymbolsAndSetName(songs);
-            var db=new SongsContext();
+            RemoveUnnecessarySymbolsAndSetNameAndId(songs);
+            var db = new SongsContext();
             SaveToDatabase(db, songs);
+
         }
 
         private static void SaveToDatabase(SongsContext db, List<Song> songs)
@@ -35,19 +36,22 @@ namespace SongsParser
 
         private static IEnumerable<string> PreprocessingToParsing(string text)
         {
-            var songTexts = text.Split('№');
-                
+            var songTexts = Regex.Split(text, @"\d+\r+");
+
             return songTexts.Skip(1);
         }
 
-        private static void RemoveUnnecessarySymbolsAndSetName(IEnumerable<Song> songs)
+        private static void RemoveUnnecessarySymbolsAndSetNameAndId(IEnumerable<Song> songs)
         {
+            var i = 1;
             foreach (var song in songs)
             {
-                song.Text=string.Concat(song.Text.Skip(6));
+                song.Id = i;
+                song.Text = string.Concat(song.Text.Skip(6));
                 if (song.Name == null)
                     song.Name = string.Concat(song.Text.TakeWhile(p => p != '\n'))
-                        .TrimEnd(new char[] {',', '\n', '\r', ' '});
+                        .TrimEnd(new char[] { ',', '\n', '\r', ' ' });
+                i++;
             }
         }
 
